@@ -128,24 +128,29 @@ class BinaryTree {
 		this.root = this._deleteRecursive(this.root, value)
 	}
 
-	_deleteRecursive(node, value){
-		if (!node) return null
+	_deleteRecursive(node, value) {
+		if (!node) return null;
 
 		if (value < node.content) {
-			node.left = this._deleteRecursive(node.left, value)
+			node.left = this._deleteRecursive(node.left, value);
 		} else if (value > node.content) {
-			node.right = this._deleteRecursive(node.right, value)
+			node.right = this._deleteRecursive(node.right, value);
 		} else {
-			// node has only one child or no child
-			if (!node.left) return node.right
-			if (!node.right) return node.left
+			// Node with only one child or no child
+			if (!node.left) return node.right;
+			if (!node.right) return node.left;
 
-			// node with two children, get in-order successor 
-			let temp = this.subtree_first(node.right)
+			// Node with two children: Get the inorder successor (smallest in the right subtree)
+			let temp = this.subtree_first(node.right);
 
-			node.content = temp.content
-			node.right = this._deleteRecursive(node.right, temp.content)
+			// Copy the inorder successor's content to this node
+			node.content = temp.content;
+
+			// Delete the inorder successor
+			node.right = this._deleteRecursive(node.right, temp.content);
 		}
+
+		return node;
 	}
 }
 
@@ -156,20 +161,3 @@ module.exports = {
   Node, 
 	BinaryTree
 };
-
-
-// // Example usage
-// const tree = new BinaryTree();
-// tree.insert(5);
-// tree.insert(3);
-// tree.insert(7);
-// tree.insert(1);
-// tree.insert(2);
-// tree.insert(8);
-// tree.insert(11);
-// tree.insert(1);
-// tree.insert(15);
-
-// console.log(tree.root); // Output: The root node of the binary tree
-
-// console.log(tree.inOrderTraversal()); // Output: [3, 5, 7]
