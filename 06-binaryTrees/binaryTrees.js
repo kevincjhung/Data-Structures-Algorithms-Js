@@ -38,7 +38,6 @@ class Node {
 
 
 
-
 class BinaryTree {
 	constructor() {
 		this.root = null;
@@ -94,6 +93,7 @@ class BinaryTree {
 		}
 	}
 
+
 	/**
 	 * Returns the in-order traversal of the binary tree.
 	 * @returns {Array} - An array containing nodes of the tree in in-order.
@@ -104,7 +104,7 @@ class BinaryTree {
 		return result;
 	}
 
-	
+
 	/**
 	 * Finds the first(smallest) node in a given subtree
 	 * @param {node} node - The root node of the subtree
@@ -127,6 +127,7 @@ class BinaryTree {
 	delete(value){
 		this.root = this._deleteRecursive(this.root, value)
 	}
+
 
 	_deleteRecursive(node, value) {
 		if (!node) return null;
@@ -153,7 +154,6 @@ class BinaryTree {
 		return node;
 	}
 }
-
 
 
 

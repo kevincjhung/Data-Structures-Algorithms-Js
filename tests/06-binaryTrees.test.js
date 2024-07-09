@@ -1,5 +1,6 @@
 const { Node, BinaryTree } = require('../06-binaryTrees/binaryTrees');
 
+
 /**
  * Tests for the Node class
  */
