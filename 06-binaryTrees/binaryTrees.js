@@ -103,6 +103,11 @@ class BinaryTree {
         this._inOrderTraversal(this.root, result);
         return result;
     }
+
+   // TODO: subtree_first
+
+   // TODO: delete(node)
+   
 }
 
 // Example usage
