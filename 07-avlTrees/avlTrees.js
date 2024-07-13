@@ -37,6 +37,11 @@ class Node {
 }
 
 
+class AVLTree {
+
+}
+
+
 
 
 module.exports = {
