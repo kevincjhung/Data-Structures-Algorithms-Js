@@ -1,4 +1,4 @@
-const { Node, BinaryTree } = require('../06-binaryTrees/binaryTrees');
+const { Node, BinaryTree } = require('../06-binaryTree/binaryTree');
 
 
 /**
