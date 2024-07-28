@@ -50,6 +50,24 @@ class AVLTree {
         return y;
     }
 
+    // Search for a key in the AVL Tree
+    search(key){
+        return this._search(this.root, key)
+    }
+
+    _search(node, key){
+        if(!node || node.content === key){
+            return node
+        }
+
+        if(key < node.content){
+            return this._search(node.left, key)
+        } else if(node.content < key){
+            return this._search(node.right, key)
+        }
+    }
+
+
     // Insert a new key into the AVL tree
     insert(key) {
         this.root = this._insert(this.root, key);
@@ -104,6 +122,65 @@ class AVLTree {
         return node;
     }
 
+    // Get the node with the minimum key
+    getMinValueNode(node){
+        let current = node;
+
+        while(current.left !== null){
+            current = current.left;
+        }
+        return current
+    }
+
+    // Delete a key from the AVL tree
+    delete(key) {
+        this.root = this._delete(this.root, key);
+    }
+
+    // Recursive helper function to delete a key
+    _delete(node, key) {
+        if (!node) {
+            return node;
+        }
+
+        if (key < node.content) {
+            node.setLeft(this._delete(node.left, key));
+        } else if (key > node.content) {
+            node.setRight(this._delete(node.right, key));
+        } else {
+            if (!node.left || !node.right) {
+                node = node.left ? node.left : node.right;
+            } else {
+                const temp = this.getMinValueNode(node.right);
+                node.content = temp.content;
+                node.setRight(this._delete(node.right, temp.content));
+            }
+        }
+
+        if (!node) return node;
+
+        node.height = Math.max(this.getHeight(node.left), this.getHeight(node.right)) + 1;
+        const balance = this.getBalanceFactor(node);
+
+        if (balance > 1 && this.getBalanceFactor(node.left) >= 0) {
+            return this.rightRotate(node);
+        }
+        if (balance > 1 && this.getBalanceFactor(node.left) < 0) {
+            node.setLeft(this.leftRotate(node.left));
+            return this.rightRotate(node);
+        }
+        if (balance < -1 && this.getBalanceFactor(node.right) <= 0) {
+            return this.leftRotate(node);
+        }
+        if (balance < -1 && this.getBalanceFactor(node.right) > 0) {
+            node.setRight(this.rightRotate(node.right));
+            return this.leftRotate(node);
+        }
+
+        return node;
+    }
+
+
     // Utility function for in-order traversal of the tree
     inOrderTraversal(node, result = []) {
         if (node) {
@@ -117,6 +194,16 @@ class AVLTree {
     // Public method to get the in-order traversal of the AVL tree
     getInOrderTraversal() {
         return this.inOrderTraversal(this.root);
+    }
+
+    // Check if AVL Tree is balanced
+    isBalancedTree(node = this.root) {
+        if (!node) return true;
+
+        const balanceFactor = this.getBalanceFactor(node);
+        if (Math.abs(balanceFactor) > 1) return false;
+
+        return this.isBalancedTree(node.left) && this.isBalancedTree(node.right);
     }
 }
 
