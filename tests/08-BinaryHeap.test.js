@@ -68,5 +68,13 @@ describe('BinaryHeap', () => {
       expect(heap.peek()).toBe(1); // Assuming a min-heap, 1 should be the root
     });
   });
+
+  // TODO: extractRoot
+
+
+  // TODO: peek
+  
+  // TODO: getLength
+
 })
 
