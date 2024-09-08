@@ -112,6 +112,8 @@ class BinaryHeap {
       this._heap[0] = last;
       this.heapifyDown(0);
     }
+
+    return root;
   }
 
   /**
