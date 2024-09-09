@@ -34,12 +34,32 @@ describe('AdjacencyListGraph', () => {
     it('removes edges correctly', () => {
       graph.addVertex('A');
       graph.addVertex('B');
-      graph.addEdge('A', 'B');
+      graph.addVertex('C');
+      graph.addEdge('A', 'B', 'C');
       graph.removeEdge('A', 'B');
       expect(graph.getEdges('A')).not.toContain('B');
       expect(graph.getEdges('B')).not.toContain('A');
     });
+    
+    describe('Returning vertices', () => {
+      it('returns complete list of all vertices in the graph', () =>  {
+
+        function addOne(){ return addOne + 1;}
+        graph.addVertex('A')
+        graph.addVertex('B')
+        graph.addVertex('C')
+        graph.addVertex(1)
+        graph.addVertex(2)
+        graph.addVertex(3)
+        graph.addVertex(addOne)
+        
+        const vertexList = graph.getVertices();
+        expect(vertexList).toStrictEqual(['A', 'B', 'C', 1, 2, 3, addOne])
+      })
+    })
+
   });
+
 
 
   describe('Breadth First Search', () => {
