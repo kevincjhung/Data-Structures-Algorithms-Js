@@ -3,7 +3,7 @@ const { AVLTree } = require('../07-avlTree/AVLTree');
 
 
 describe('Node', () => {
-  test('should create a node with content', () => {
+  test('create a node with content', () => {
     const node = new Node(5);
     expect(node.content).toBe(5);
     expect(node.left).toBeNull();
@@ -11,7 +11,7 @@ describe('Node', () => {
     expect(node.parent).toBeNull();
   });
 
-  test('should set left and right children', () => {
+  test('set left and right children', () => {
     const node = new Node(10)
     const leftChild = new Node(5)
     const rightChild = new Node(15)

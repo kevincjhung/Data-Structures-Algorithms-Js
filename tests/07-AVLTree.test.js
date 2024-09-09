@@ -1,7 +1,6 @@
 const { AVLTree } = require('../07-avlTree/AVLTree');
 
 
-
 describe('AVL Tree Insertion', () => {
   let tree; // Define a variable to hold the AVL tree instance
 
@@ -10,7 +9,7 @@ describe('AVL Tree Insertion', () => {
     tree = new AVLTree();
   });
 
-  test('should insert a single node and make it the root of the tree', () => {
+  test('inserts a single node and make it the root of the tree', () => {
     tree.insert(1);
 
     // Assert that the root of the tree has the correct value
@@ -21,7 +20,7 @@ describe('AVL Tree Insertion', () => {
     expect(tree.root.right).toBeNull();
   });
 
-  test('should handle multiple insertions correctly', () => {
+  test('handles multiple insertions correctly', () => {
     tree.insert(1)
     tree.insert(2)
     tree.insert(3)
@@ -38,7 +37,7 @@ describe('AVL Tree Insertion', () => {
   });
 
 
-  test('should maintain tree balance after each insertion', () => {
+  test('maintains tree balance after each insertion', () => {
     tree.insert(1);
     tree.insert(2);
     tree.insert(3);
@@ -58,7 +57,7 @@ describe('AVL Tree Insertion', () => {
   });
 
 
-  test('should not insert duplicate keys and maintain the tree structure', () => {
+  test('does not insert duplicate keys and maintain the tree structure', () => {
     tree.insert(1);
     tree.insert(2);
     tree.insert(3);
@@ -74,7 +73,7 @@ describe('AVL Tree Insertion', () => {
 
 
 describe('AVL Tree Traversal', () => {
-  test('should perform in-order traversal, and return list in order', () => {
+  test('performs in-order traversal, and return list in order', () => {
     const tree = new AVLTree();
 
     // Insert values into the tree
@@ -104,7 +103,7 @@ describe('AVL Tree Rotation', () => {
     tree = new AVLTree();
   });
 
-  test('should perform left rotation and maintain balance after rotation', () => {
+  test('performs left rotation and maintain balance after rotation', () => {
     // Insert nodes to trigger a left rotation
     tree.insert(1);
     tree.insert(2);
@@ -117,15 +116,15 @@ describe('AVL Tree Rotation', () => {
     expect(result).toEqual([1, 2, 3]);
 
     // Check the root and children
-    expect(tree.root.content).toBe(2); // The new root should be 2 after left rotation
-    expect(tree.root.left.content).toBe(1); // The left child of root should be 1
-    expect(tree.root.right.content).toBe(3); // The right child of root should be 3
+    expect(tree.root.content).toBe(2); // The new root be 2 after left rotation
+    expect(tree.root.left.content).toBe(1); // The left child of root be 1
+    expect(tree.root.right.content).toBe(3); // The right child of root be 3
 
     // Check if the tree is balanced
     expect(tree.isBalancedTree()).toBe(true);
   });
 
-  test('should perform right rotation and maintain balance after rotation', () => {
+  test('performs right rotation and maintain balance after rotation', () => {
     tree.insert(3)
     tree.insert(2)
     tree.insert(1)
@@ -137,15 +136,15 @@ describe('AVL Tree Rotation', () => {
     expect(result).toEqual([1, 2, 3]);
 
     // Check the root and children
-    expect(tree.root.content).toBe(2); // The new root should be 2 after left rotation
-    expect(tree.root.left.content).toBe(1); // The left child of root should be 1
-    expect(tree.root.right.content).toBe(3); // The right child of root should be 3
+    expect(tree.root.content).toBe(2); // The new root be 2 after left rotation
+    expect(tree.root.left.content).toBe(1); // The left child of root be 1
+    expect(tree.root.right.content).toBe(3); // The right child of root be 3
 
     // Check if the tree is balanced
     expect(tree.isBalancedTree()).toBe(true);
   })
 
-  test('should perform left-right rotation and maintain balance after rotation', () => {
+  test('performs left-right rotation and maintain balance after rotation', () => {
     // Insert nodes to trigger a left-right rotation
     tree.insert(3);
     tree.insert(1);
@@ -158,15 +157,15 @@ describe('AVL Tree Rotation', () => {
     expect(result).toEqual([1, 2, 3]);
 
     // Check the root and children
-    expect(tree.root.content).toBe(2); // The new root should be 2 after left-right rotation
-    expect(tree.root.left.content).toBe(1); // The left child of root should be 1
-    expect(tree.root.right.content).toBe(3); // The right child of root should be 3
+    expect(tree.root.content).toBe(2); // The new root be 2 after left-right rotation
+    expect(tree.root.left.content).toBe(1); // The left child of root be 1
+    expect(tree.root.right.content).toBe(3); // The right child of root be 3
 
     // Check if the tree is balanced
     expect(tree.isBalancedTree()).toBe(true);
   });
 
-  test('should perform right-left rotation and maintain balance after rotation', () => {
+  test('performs right-left rotation and maintain balance after rotation', () => {
     // Insert nodes to trigger a right-left rotation
     tree.insert(1);
     tree.insert(3);
@@ -179,9 +178,9 @@ describe('AVL Tree Rotation', () => {
     expect(result).toEqual([1, 2, 3]);
 
     // Check the root and children
-    expect(tree.root.content).toBe(2); // The new root should be 2 after right-left rotation
-    expect(tree.root.left.content).toBe(1); // The left child of root should be 1
-    expect(tree.root.right.content).toBe(3); // The right child of root should be 3
+    expect(tree.root.content).toBe(2); // The new root be 2 after right-left rotation
+    expect(tree.root.left.content).toBe(1); // The left child of root be 1
+    expect(tree.root.right.content).toBe(3); // The right child of root be 3
 
     // Check if the tree is balanced
     expect(tree.isBalancedTree()).toBe(true);
@@ -199,7 +198,7 @@ describe('AVL Tree Node Deletion', () => {
     tree = new AVLTree();
   });
 
-  test('should correctly delete a node with a single child', () => {
+  test('deletes a node with a single child', () => {
     tree.insert(10);
     tree.insert(5);
     tree.insert(15);
@@ -214,7 +213,7 @@ describe('AVL Tree Node Deletion', () => {
     expect(tree.isBalancedTree()).toBe(true);
   });
 
-  test('should correctly delete a node with two children', () => {
+  test('deletes a node with two children', () => {
     tree.insert(10);
     tree.insert(5);
     tree.insert(15);
@@ -250,14 +249,15 @@ describe('AVL Tree Search', () => {
 
   });
 
-  test('should correctly return node that is present in the tree', () => {
+  test('returns node that is present in the tree', () => {
     const node = tree.search(7);
     expect(node).not.toBeNull();
     expect(node.content).toBe(7);
   });
 
-  test('should correctly return null if node is not in the tree', () => {
+  test('returns null if node is not in the tree', () => {
     const node = tree.search(20);
     expect(node).toBeNull();
   });
 })
+

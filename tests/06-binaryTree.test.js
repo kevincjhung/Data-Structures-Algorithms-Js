@@ -6,7 +6,7 @@ const { Node } = require('../06-binaryTree/Node');
  * Tests for the Node class
  */
 describe('Node', () => {
-  test('should create a node with content', () => {
+  test('creates a node with content', () => {
     const node = new Node(5);
     expect(node.content).toBe(5);
     expect(node.left).toBeNull();
@@ -14,7 +14,7 @@ describe('Node', () => {
     expect(node.parent).toBeNull();
   });
 
-  test('should set left and right children', () => {
+  test('sets left and right children', () => {
     const node = new Node(10)
     const leftChild = new Node(5)
     const rightChild = new Node(15)
@@ -33,7 +33,7 @@ describe('Node', () => {
  * Tests for the Binary Tree class
  */
 describe('BinaryTree', () => {
-  test('should insert values into the binary tree', () => {
+  test('inserts values into the binary tree', () => {
     const tree = new BinaryTree();
     tree.insert(10);
     tree.insert(5);
@@ -44,7 +44,7 @@ describe('BinaryTree', () => {
     expect(tree.root.right.content).toBe(15);
   });
 
-  test('should return the smallest element in a subtree', () => {
+  test('returns the smallest element in a subtree', () => {
     const tree = new BinaryTree()
 
     tree.insert(5)
@@ -59,7 +59,7 @@ describe('BinaryTree', () => {
     expect(smallestNode.content).toEqual(1);
   })
 
-  test('should perform in-order traversal', () => {
+  test('performs in-order traversal', () => {
     const tree = new BinaryTree();
     tree.insert(10);
     tree.insert(5);
@@ -69,7 +69,7 @@ describe('BinaryTree', () => {
     expect(traversalResult).toEqual([5, 10, 15]);
   });
 
-  test('should delete a node from the binary tree', () => {
+  test('deletes a node from the binary tree', () => {
     const tree = new BinaryTree();
     tree.insert(10);
     tree.insert(5);
