@@ -60,8 +60,29 @@ class AdjacencyListGraph {
     this.adjacencyList.delete(vertex);
   }
 
-  removeEdge(source, destination){
+  /**
+   * Removes an edge between two vertices.
+   * 
+   * @param {*} sourceVertex
+   * @param {*} destinationVertex
+   */
+  removeEdge(sourceVertex, destinationVertex){
+    if(!this.adjacencyList.has(sourceVertex) || !this.adjacencyList.has(destinationVertex)){
+      throw new Error('Both vertices are required to remove an edge.')
+    }
 
+    const sourceList = this.adjacencyList.get(sourceVertex);
+    const destinationList = this.adjacencyList.get(destinationVertex);
+
+    const sourceIndex = sourceList.indexOf(destinationVertex);
+    const destinationIndex = destinationList.indexOf(sourceVertex);
+
+    if (sourceIndex !== -1) {
+      sourceList.splice(sourceIndex, 1);
+    }
+    if (destinationIndex !== -1) {
+      destinationList.splice(destinationIndex, 1);
+    }
   }
 
   getVertices(){
@@ -95,3 +116,7 @@ class AdjacencyListGraph {
 
   }
 }
+
+module.exports = {
+  AdjacencyListGraph
+};
