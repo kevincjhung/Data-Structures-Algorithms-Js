@@ -1,7 +1,7 @@
 const { AdjacencyListGraph } = require('../09-breadthFirstSearch/AdjacencyListGraph');
 
 
-describe('AdjacencyListGraph', () => {
+describe('breadthFirstSearch', () => {
   let graph;
 
   beforeEach(() => {
