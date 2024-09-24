@@ -163,7 +163,7 @@ class AdjacencyMatrixGraph {
    * @throws {Error} If the start vertex does not exist
    * @private
    */
-  _bfs(startVertex) {
+  _dfs(startVertex) {
     const visited = new Set();
     const queue = [];
     const traversalOrder = [];
@@ -192,45 +192,14 @@ class AdjacencyMatrixGraph {
    * Initiates breadth-first search from a starting vertex
    * @param {*} startVertex 
    */
-  breadthFirstSearch(startVertex) {
+  depthFirstSearch(startVertex) {
     if (!this.hasVertex(startVertex)) {
       throw new Error(`The vertex ${startVertex} does not exist`)
     }
 
-    return this._bfs(startVertex);
+    return this._dfs(startVertex);
   }
 
-
-  /**
-   * Gets a distance map from the starting vertex to all other vertices using BFS
-   * @param {*} startVertex - The starting vertex. 
-   * @returns {Object} A map of vertices and their distance from the starting vertex
-   */
-  bfsDistanceMap(startVertex, endVertex) {
-    if (startVertex === endVertex) return { [startVertex]: 0 }; // Check if startVertex is the same as endVertex
-
-    const distanceMap = {};
-    const queue = [];
-    const visited = new Set();
-
-    visited.add(startVertex);
-    queue.push([startVertex, 0]);
-
-    while (queue.length > 0) {
-      const [vertex, distance] = queue.shift();
-      distanceMap[vertex] = distance;
-
-      const edges = this.getEdges(vertex);
-      for (const edge of edges) {
-        if (!visited.has(edge)) {
-          visited.add(edge);
-          queue.push([edge, distance + 1]);
-        }
-      }
-    }
-
-    return distanceMap;
-  }
 
 
 
@@ -245,7 +214,7 @@ class AdjacencyMatrixGraph {
    *                       the startVertex to the endVertex. If no path exists, 
    *                       an empty array is returned.
    */
-  bfsShortestPath(startVertex, endVertex) {
+  dfsShortestPath(startVertex, endVertex) {
     const visited = new Set();
     const queue = [];
     const predecessors = new Map(); // To track the path
@@ -279,6 +248,41 @@ class AdjacencyMatrixGraph {
     }
 
     return []; // Return empty array if no path found
+  }
+
+
+
+  /**
+   * Checks whether there is a path between two vertices using DFS.
+   * @returns {boolean}
+   */
+  isConnected(){
+
+  }
+
+
+  findPath(){
+
+  }
+
+  countConnectedComponents(){
+
+  }
+
+  detectCycle(){
+
+  }
+
+  getAdjacentVertices(){
+
+  }
+
+  topologicalSort(){
+
+  }
+
+  _topologicalSortDFS(){
+    
   }
 }
 
