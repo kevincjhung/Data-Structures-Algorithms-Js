@@ -6,18 +6,24 @@ class AdjacencyMatrixGraph {
     this.vertices = new Set();
   }
 
+
   /**
    * Adds a vertex to the graph
    * @param {*} vertex 
    * @throws {Error} If the vertex already exists
    */
   addVertex(vertex) {
-   if (this.hasVertex(vertex)){
-    throw new Error(`Vertex ${vertex} already exists`);
-   }
+    if (this.hasVertex(vertex)) {
+      throw new Error(`Vertex ${vertex} already exists`);
+    }
 
-   this.vertices.add(vertex)
+    this.vertices.add(vertex)
+    this.numVertices++; // Increase vertex count
+
+    this.adjMatrix.forEach(row => row.push(0)); // Add a new column
+    this.adjMatrix.push(Array(this.numVertices).fill(0)); // Add a new row
   }
+
 
   /**
    * Adds an edge between two vertices. 
@@ -28,30 +34,41 @@ class AdjacencyMatrixGraph {
     if (!this.hasVertex(sourceVertex) || !this.hasVertex(destinationVertex)) {
       throw new Error(`One or both vertices do not exist`);
     }
-  
+
     const srcIndex = [...this.vertices].indexOf(sourceVertex);
     const destIndex = [...this.vertices].indexOf(destinationVertex);
+
+    // Check if the edge already exists
+    if (this.adjMatrix[srcIndex][destIndex] === 1) {
+      throw new Error(`Edge ${sourceVertex} - ${destinationVertex} already exists`);
+    }
+
     this.adjMatrix[srcIndex][destIndex] = 1; // Set edge from source to destination
     this.adjMatrix[destIndex][srcIndex] = 1; // If undirected, also set edge from destination to source
   }
-  
+
+
   /**
    * Removes a vertex from the graph along with its edges
    * @param {any} vertex - The vertex to be removed
-   * @throws {Error} If the veretx does not exist
+   * @throws {Error} If the vertex does not exist
    */
   removeVertex(vertex) {
     if (!this.hasVertex(vertex)) {
       throw new Error(`Vertex ${vertex} does not exist`);
     }
-  
-    this.vertices.delete(vertex);
-    const index = [...this.vertices].indexOf(vertex);
-  
+
+    const index = [...this.vertices].indexOf(vertex); // Get index before removing the vertex
+
+    this.vertices.delete(vertex); // Remove the vertex from the set
+
+    // Remove the corresponding row and column in the adjacency matrix
     this.adjMatrix.splice(index, 1); // Remove the row
     this.adjMatrix.forEach(row => row.splice(index, 1)); // Remove the column
-    this.numVertices--;
+    this.numVertices--; // Decrease the count of vertices
   }
+
+
   /**
    * Removes an edge between two vertices
    * @param {any} sourceVertex - The source vertex
@@ -59,13 +76,14 @@ class AdjacencyMatrixGraph {
    * @throws {Error} If the edge doesn't exist
    */
   removeEdge(sourceVertex, destinationVertex) {
-    if(this.hasEdge(sourceVertex, destinationVertex)){
+    if (!this.hasEdge(sourceVertex, destinationVertex)) {
       throw new Error(`the edge ${sourceVertex} - ${destinationVertex} does not exist`)
     }
 
     const srcIndex = [...this.vertices].indexOf(sourceVertex)
     const destIndex = [...this.vertices].indexOf(destinationVertex)
     this.adjMatrix[srcIndex][destIndex] = 0; // remove the edge
+    this.adjMatrix[destIndex][srcIndex] = 0; // remove the edge
   }
 
   /**
@@ -83,14 +101,14 @@ class AdjacencyMatrixGraph {
    * @throws {Error} If the vertex doesn't exist
    */
   getEdges(vertex) {
-    if(!this.hasVertex(vertex)){
+    if (!this.hasVertex(vertex)) {
       throw new Error(`The given vertex ${vertex} doesn't exist`)
     }
 
     const index = [...this.vertices].indexOf(vertex)
     const edges = [];
-    for(let i = 0; i < this.numVertices; i++){
-      if(this.adjMatrix[index][i] === 1){
+    for (let i = 0; i < this.numVertices; i++) {
+      if (this.adjMatrix[index][i] === 1) {
         edges.push([...this.vertices][i])
       }
     }
@@ -113,13 +131,13 @@ class AdjacencyMatrixGraph {
    * @returns 
    */
   hasEdge(sourceVertex, destinationVertex) {
-   if (!this.hasVertex(sourceVertex) || !this.hasVertex(destinationVertex)){
-    return false
-   }
+    if (!this.hasVertex(sourceVertex) || !this.hasVertex(destinationVertex)) {
+      return false
+    }
 
-   const srcIndex = [...this.vertices].indexOf(sourceVertex);
-   const destIndex = [...this.vertices].indexOf(destinationVertex);
-   return this.adjMatrix[srcIndex][destIndex] === 1;
+    const srcIndex = [...this.vertices].indexOf(sourceVertex);
+    const destIndex = [...this.vertices].indexOf(destinationVertex);
+    return this.adjMatrix[srcIndex][destIndex] === 1;
   }
 
   /**
@@ -127,7 +145,7 @@ class AdjacencyMatrixGraph {
    * @returns {number} The number of vertices.
    */
   vertexCount() {
-   return this.vertices.size;
+    return this.vertices.size;
   }
 
   /**
@@ -146,21 +164,21 @@ class AdjacencyMatrixGraph {
    * @private
    */
   _bfs(startVertex) {
-    const visited = new Set()
+    const visited = new Set();
     const queue = [];
     const traversalOrder = [];
-    
-    visited.add(startVertex)
-    queue.push(startVertex)
 
-    while(queue.length > 0){
-      const vertex = queue.shift
+    visited.add(startVertex);
+    queue.push(startVertex);
+
+    while (queue.length > 0) {
+      const vertex = queue.shift(); // Fixed here
       traversalOrder.push(vertex);
 
       const edges = this.getEdges(vertex);
 
-      for(const edge of edges){
-        if(!visited.has(edge)){
+      for (const edge of edges) {
+        if (!visited.has(edge)) {
           visited.add(edge);
           queue.push(edge);
         }
@@ -175,35 +193,38 @@ class AdjacencyMatrixGraph {
    * @param {*} startVertex 
    */
   breadthFirstSearch(startVertex) {
-    if(!this.hasVertex(startVertex)){
+    if (!this.hasVertex(startVertex)) {
       throw new Error(`The vertex ${startVertex} does not exist`)
     }
 
     return this._bfs(startVertex);
   }
 
+
   /**
    * Gets a distance map from the starting vertex to all other vertices using BFS
    * @param {*} startVertex - The starting vertex. 
    * @returns {Object} A map of vertices and their distance from the starting vertex
    */
-  bfsDistanceMap(startVertex) {
+  bfsDistanceMap(startVertex, endVertex) {
+    if (startVertex === endVertex) return { [startVertex]: 0 }; // Check if startVertex is the same as endVertex
+
     const distanceMap = {};
     const queue = [];
-    const visited = new Set() // use of set to ensure that each vertex is only marked as visited once
+    const visited = new Set();
 
     visited.add(startVertex);
     queue.push([startVertex, 0]);
 
-    while(queue.length > 0){
+    while (queue.length > 0) {
       const [vertex, distance] = queue.shift();
       distanceMap[vertex] = distance;
 
       const edges = this.getEdges(vertex);
-      for(const edge of edges){
-        if (!visited.has(edge)){
-          visited.add(edge) // mark edge as visited
-          queue.push([edge, distance + 1])
+      for (const edge of edges) {
+        if (!visited.has(edge)) {
+          visited.add(edge);
+          queue.push([edge, distance + 1]);
         }
       }
     }
@@ -211,14 +232,47 @@ class AdjacencyMatrixGraph {
     return distanceMap;
   }
 
+
+
   /**
    * Gets the shortest path distance between two vertices using BFS
    * @param {any} startVertex - The starting vertex
    * @param {any} endVertex - The ending vertex
    */
   bfsShortestPath(startVertex, endVertex) {
-    const distanceMap = this.bfsDistanceMap(startVertex)
-    return distanceMap[endVertex] !== undefined ? distanceMap[endVertex] : null;
+    const visited = new Set();
+    const queue = [];
+    const predecessors = new Map(); // To track the path
+
+    visited.add(startVertex);
+    queue.push(startVertex);
+
+    while (queue.length > 0) {
+      const vertex = queue.shift();
+
+      if (vertex === endVertex) {
+        // Path found, reconstruct the path
+        const path = [];
+        let current = endVertex;
+        while (current !== startVertex) {
+          path.push(current);
+          current = predecessors.get(current);
+        }
+        path.push(startVertex);
+        return path.reverse(); // Return the path in correct order
+      }
+
+      const edges = this.getEdges(vertex);
+      for (const edge of edges) {
+        if (!visited.has(edge)) {
+          visited.add(edge);
+          queue.push(edge);
+          predecessors.set(edge, vertex); // Set predecessor
+        }
+      }
+    }
+
+    return []; // Return empty array if no path found
   }
 }
 
