@@ -9,20 +9,13 @@ const timeout = 90;
 // way[highway]; Filters for ways with any highway tag value. 
 
 
-const bbox = {
-  south: 48.273,
-  west: 2.224,
-  north: 49.211,
-  east: 2.469
-};
 
-// 
-// const bbox = {
-//   south: 49.205587,
-//   west: -123.28145,
-//   north: 49.29335,
-//   east: -123.022058
-// };
+const bbox = {
+  south: 49.205587,
+  west: -123.28145,
+  north: 49.29335,
+  east: -123.022058
+};
 
 // Construct the OverpassQL query with template literals
 const query = `
