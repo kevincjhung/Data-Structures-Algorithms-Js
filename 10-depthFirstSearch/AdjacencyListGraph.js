@@ -16,8 +16,8 @@ class AdjacencyListGraph {
   /**
    * Adds an undirected edge between two vertices.
    * 
-   * @param {*} sourceVertex 
-   * @param {*} destinationVertex 
+   * @param {*} sourceVertex - The starting vertex
+   * @param {*} destinationVertex - The ending vertex
    */
   addEdge(sourceVertex, destinationVertex) {
     // Validate input vertices
@@ -41,22 +41,22 @@ class AdjacencyListGraph {
   /**
    * Removes a vertex and its associated edges from the graph
    * 
-   * @param {*} vertex - The veretx to remove
+   * @param {*} vertex - The veretx to remove.
    */
   removeVertex(vertex) {
     if (!this.adjacencyList.has(vertex)) {
-      throw new Error('Vertex to be removed is not found.')
+      throw new Error('Vertex not found in the graph.');
     }
 
-    // remove edges to the vertex
-    this.adjacencyList.forEach((edges, key) => {
-      const index = edges.indexOf(vertex);
-      if (index !== -1) {
-        edges.splice(index, 1);
-      }
-    })
+    // Remove the vertex from adjacency lists of other vertices
+    this.adjacencyList.forEach((neighbors, key) => {
+      this.adjacencyList.set(
+        key,
+        neighbors.filter(neighbor => neighbor !== vertex)
+      );
+    });
 
-    // remove the vertex
+    // Remove the vertex itself
     this.adjacencyList.delete(vertex);
   }
 
@@ -68,21 +68,19 @@ class AdjacencyListGraph {
    */
   removeEdge(sourceVertex, destinationVertex) {
     if (!this.adjacencyList.has(sourceVertex) || !this.adjacencyList.has(destinationVertex)) {
-      throw new Error('Both vertices are required to remove an edge.')
+      throw new Error('Both vertices are required to remove an edge.');
     }
 
-    const sourceList = this.adjacencyList.get(sourceVertex);
-    const destinationList = this.adjacencyList.get(destinationVertex);
+    // Remove the edge in both directions
+    this.adjacencyList.set(
+      sourceVertex,
+      this.adjacencyList.get(sourceVertex).filter(neighbor => neighbor !== destinationVertex)
+    );
 
-    const sourceIndex = sourceList.indexOf(destinationVertex);
-    const destinationIndex = destinationList.indexOf(sourceVertex);
-
-    if (sourceIndex !== -1) {
-      sourceList.splice(sourceIndex, 1);
-    }
-    if (destinationIndex !== -1) {
-      destinationList.splice(destinationIndex, 1);
-    }
+    this.adjacencyList.set(
+      destinationVertex,
+      this.adjacencyList.get(destinationVertex).filter(neighbor => neighbor !== sourceVertex)
+    );
   }
 
   /**
@@ -120,8 +118,8 @@ class AdjacencyListGraph {
   /**
    * Checks if an edge exists between two vertices.
    * 
-   * @param {*} sourceVertex 
-   * @param {*} destinationVertex 
+   * @param {*} sourceVertex - The starting vertex
+   * @param {*} destinationVertex - The ending vertex
    * @returns {boolean} True if the edge exists, false if it doesn't.
    */
   hasEdge(sourceVertex, destinationVertex) {
@@ -149,23 +147,68 @@ class AdjacencyListGraph {
   }
 
   /**
-   * Performs breadth-first search (BFS) starting from the given vertex.
+   * Performs depth-first search (DFS) starting from the given vertex.
    * @param {*} startVertex 
    * @returns {Object} Contains traversal order, distance map, and paths.
    * @private
    */
   _dfs(startVertex) {
-  
+    if (!this.adjacencyList.has(startVertex)) {
+      throw new Error('Start vertex not found in graph')
+    }
+
+    const visited = new Set();
+    const traversalOrder = [];
+    const distances = {};
+    const parents = {};
+    const stack = [startVertex];
+
+    // Initialize distances and parents
+    for (const vertex of this.adjacencyList.keys) {
+      distances[vertex] = Infinity;
+      parents[vertex] = null;
+    }
+
+    distances[startVertex] = 0;
+
+    while (stack.length > 0) {
+      const vertex = stack.pop();
+
+      if (!visited.has(vertex)) {
+        visited.add(vertex);
+        traversalOrder.push(vertex);
+
+        const depth = distances[vertex];
+
+        for (const neighbor of this.adjacencyList.get(vertex)) {
+          if (!visited.has(neighbor)) {
+            stack.push(neighbor)
+
+            // Update the distance and parent only if the neighbor hasn't been visited yet
+            if (distances[neighbor] === Infinity) {
+              distances[neighbor] = depth + 1;
+              parents[neighbor] = vertex;
+            }
+          }
+        }
+      }
+    }
+
+    return {
+      traversalOrder,
+      distances,
+      parents,
+    };
   }
 
   /**
-   * Returns the list of vertices in the order they were visited during BFS.
+   * Returns the list of vertices in the order they were visited during DFS.
    * 
    * @param {*} startVertex 
-   * @returns {Array} The list of vertices in BFS order.
+   * @returns {Array} The list of vertices in DFS order.
    */
   depthFirstSearch(startVertex) {
-    const { traversalOrder } = this._bfs(startVertex);
+    const { traversalOrder } = this._dfs(startVertex);
     return traversalOrder;
   }
 
@@ -174,36 +217,161 @@ class AdjacencyListGraph {
    * Checks whether there is a path between two vertices using DFS.
    * @returns {boolean}
    */
-  isConnected(){
+  isConnected() {
+    const startVertex = this.getVertices()[0];
+    if (!startVertex) return false;
 
+    const { traversalOrder } = this._dfs(startVertex);
+    return traversalOrder.length === this.vertexCount();
   }
 
+  /**
+   * Finds a path from one vertex to another using depth-first search
+   * 
+   * @param {*} startVertex - The starting vertex
+   * @param {*} endVertex - The ending vertex
+   * @returns {Array} The path from startVertex to endVertex, or an empty Array if no path exists
+   * 
+   */
+  findPath(startVertex, endVeretx) {
+    const { parents } = this._dfs(startVertex);
 
-  findPath(){
+    const path = [];
+    let current = endVertex;
 
+    while (current !== null) {
+      path.unshift(current);
+      current = parents[current]
+    }
+
+    return path[0] === startVertex ? path : [];
   }
 
-  countConnectedComponents(){
+  /**
+   * Counts the number of connected components in the graph
+   * 
+   * @returns {number} The number of connected components.
+   */
+  countConnectedComponents() {
+    const visited = new Set();
 
+    let count = 0;
+    for (const vertex of this.adjacencyList.keys()) {
+      if (!visited.has(vertex)) {
+        this._dfs(vertex);
+        count++;
+      }
+    }
+    return count;
   }
 
-  detectCycle(){
+  /**
+   * Detects cycles in the graph using DFS
+   * 
+   * @returns {boolean} True if a cycle exists, false otherwise.
+   */
+  detectCycle() {
+    const visited = new Set();
+    const recStack = new Set(); // To keep track of vertices in the current path
 
+    // Iterate through each vertex in the graph
+    for (const vertex of this.adjacencyList.keys()) {
+      const stack = [vertex]; // Initialize a stack with the current vertex
+
+      while (stack.length > 0) {
+        const current = stack.pop();
+
+        // If current vertex is not visited
+        if (!visited.has(current)) {
+          visited.add(current);
+          recStack.add(current);
+
+          // Push all its neighbors onto the stack
+          for (const neighbor of this.adjacencyList.get(current)) {
+            if (!visited.has(neighbor)) {
+              stack.push(neighbor);
+            } else if (recStack.has(neighbor)) {
+              // If the neighbor is in the recursion stack, a cycle is detected
+              return true;
+            }
+          }
+        }
+
+        // Backtrack: Remove current from recursion stack
+        recStack.delete(current);
+      }
+    }
+    return false; // No cycles found
   }
 
-  getAdjacentVertices(){
+  /**
+   * Returns the list of adjacent vertices for a given vertex.
+   * 
+   * @param {*} vertex - The vertex for which adjacent vertices are being fetched.
+   * @returns {Array} The list of adjacency vertices
+   * @throws {Error} If the vertex is not in the graph
+   */
+  getAdjacentVertices(vertex) {
+    if (!this.adjacencyList.has(vertex)) {
+      throw new Error('The vertex is not in the graph')
+    }
 
+    return this.adjacencyList.get(vertex);
   }
 
-  topologicalSort(){
+  /**
+ * Performs topological sorting of the directed graph.
+ * 
+ * @returns {Array} An array containing the vertices in topologically sorted order.
+ * @throws {Error} If the graph contains a cycle.
+ */
+  topologicalSort() {
+    const stack = [];
+    const inDegree = new Map(); // To track the in-degree of each vertex
 
-  }
+    // Initialize in-degrees to 0
+    for (const vertex of this.adjacencyList.keys()) {
+      inDegree.set(vertex, 0);
+    }
 
-  _topologicalSortDFS(){
-    
+    // Calculate in-degrees of each vertex
+    for (const vertex of this.adjacencyList.keys()) {
+      for (const neighbor of this.adjacencyList.get(vertex)) {
+        inDegree.set(neighbor, inDegree.get(neighbor) + 1);
+      }
+    }
+
+    // Create a queue for vertices with no incoming edges (in-degree 0)
+    const queue = [];
+    for (const [vertex, degree] of inDegree) {
+      if (degree === 0) {
+        queue.push(vertex);
+      }
+    }
+
+    // Process vertices until the queue is empty
+    while (queue.length > 0) {
+      const vertex = queue.shift(); // Dequeue a vertex
+      stack.push(vertex); // Add to the topological order
+
+      // Decrease in-degree of neighboring vertices
+      for (const neighbor of this.adjacencyList.get(vertex)) {
+        inDegree.set(neighbor, inDegree.get(neighbor) - 1);
+        // If in-degree becomes 0, add it to the queue
+        if (inDegree.get(neighbor) === 0) {
+          queue.push(neighbor);
+        }
+      }
+    }
+
+    // If the stack size is not equal to the number of vertices, there is a cycle
+    if (stack.length !== this.adjacencyList.size) {
+      throw new Error('Graph contains a cycle; topological sort not possible.');
+    }
+
+    return stack; // Return the topological sort order
   }
 }
-
 
 module.exports = {
   AdjacencyListGraph

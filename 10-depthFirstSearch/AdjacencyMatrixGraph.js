@@ -157,7 +157,7 @@ class AdjacencyMatrixGraph {
   }
 
   /**
-   * Performs a breadth-first search starting from a given vertex
+   * Performs a depth-first search starting from a given vertex
    * @param {any} startVertex - The starting vertex
    * @returns {Array<any>} the order of vertices visited 
    * @throws {Error} If the start vertex does not exist
@@ -189,7 +189,7 @@ class AdjacencyMatrixGraph {
   }
 
   /**
-   * Initiates breadth-first search from a starting vertex
+   * Initiates depth-first search from a starting vertex
    * @param {*} startVertex 
    */
   depthFirstSearch(startVertex) {
@@ -204,7 +204,7 @@ class AdjacencyMatrixGraph {
 
 
  /**
-   * Gets the shortest path between two vertices using BFS.
+   * Gets the shortest path between two vertices using DFS.
    * It tracks the predecessors of each visited vertex to reconstruct
    * the path once the ending vertex is reached.
    * 
