@@ -41,7 +41,7 @@ class AdjacencyListGraph {
   /**
    * Removes a vertex and its associated edges from the graph
    * 
-   * @param {*} vertex - The veretx to remove.
+   * @param {*} vertex - The vertex to remove.
    */
   removeVertex(vertex) {
     if (!this.adjacencyList.has(vertex)) {
@@ -126,6 +126,8 @@ class AdjacencyListGraph {
     if (!this.adjacencyList.has(sourceVertex) || !this.adjacencyList.has(destinationVertex)) {
       return false;
     }
+
+    return this.adjacencyList.get(sourceVertex).includes(destinationVertex);    
   }
 
   /**
@@ -164,7 +166,7 @@ class AdjacencyListGraph {
     const stack = [startVertex];
 
     // Initialize distances and parents
-    for (const vertex of this.adjacencyList.keys) {
+    for (const vertex of this.adjacencyList.keys()) {
       distances[vertex] = Infinity;
       parents[vertex] = null;
     }
@@ -218,9 +220,10 @@ class AdjacencyListGraph {
    * @returns {boolean}
    */
   isConnected() {
+    const visited = new Set();
     const startVertex = this.getVertices()[0];
     if (!startVertex) return false;
-
+  
     const { traversalOrder } = this._dfs(startVertex);
     return traversalOrder.length === this.vertexCount();
   }
@@ -233,7 +236,7 @@ class AdjacencyListGraph {
    * @returns {Array} The path from startVertex to endVertex, or an empty Array if no path exists
    * 
    */
-  findPath(startVertex, endVeretx) {
+  findPath(startVertex, endVertex) {
     const { parents } = this._dfs(startVertex);
 
     const path = [];
@@ -254,8 +257,8 @@ class AdjacencyListGraph {
    */
   countConnectedComponents() {
     const visited = new Set();
-
     let count = 0;
+
     for (const vertex of this.adjacencyList.keys()) {
       if (!visited.has(vertex)) {
         this._dfs(vertex);
@@ -266,43 +269,56 @@ class AdjacencyListGraph {
   }
 
   /**
-   * Detects cycles in the graph using DFS
-   * 
-   * @returns {boolean} True if a cycle exists, false otherwise.
-   */
-  detectCycle() {
-    const visited = new Set();
-    const recStack = new Set(); // To keep track of vertices in the current path
+ * Detects cycles in the graph using DFS.
+ * 
+ * @returns {boolean} True if a cycle exists, false otherwise.
+ */
+detectCycle() {
+  const visited = new Set();
+  const recStack = new Set(); // To keep track of vertices in the current path
 
-    // Iterate through each vertex in the graph
-    for (const vertex of this.adjacencyList.keys()) {
-      const stack = [vertex]; // Initialize a stack with the current vertex
-
-      while (stack.length > 0) {
-        const current = stack.pop();
-
-        // If current vertex is not visited
-        if (!visited.has(current)) {
-          visited.add(current);
-          recStack.add(current);
-
-          // Push all its neighbors onto the stack
-          for (const neighbor of this.adjacencyList.get(current)) {
-            if (!visited.has(neighbor)) {
-              stack.push(neighbor);
-            } else if (recStack.has(neighbor)) {
-              // If the neighbor is in the recursion stack, a cycle is detected
-              return true;
-            }
-          }
-        }
-
-        // Backtrack: Remove current from recursion stack
-        recStack.delete(current);
+  // Iterate through each vertex in the graph
+  for (const vertex of this.adjacencyList.keys()) {
+    if (!visited.has(vertex)) {
+      // Start DFS from the unvisited vertex
+      if (this._detectCycleUtil(vertex, visited, recStack)) {
+        return true; // Cycle found
       }
     }
-    return false; // No cycles found
   }
+  return false; // No cycles found
+}
+
+/**
+ * Utility function for cycle detection using DFS.
+ * 
+ * @param {*} vertex - The current vertex being visited.
+ * @param {Set} visited - The set of visited vertices.
+ * @param {Set} recStack - The recursion stack to track the path.
+ * @returns {boolean} True if a cycle exists, false otherwise.
+ * @private
+ */
+_detectCycleUtil(vertex, visited, recStack) {
+  visited.add(vertex);
+  recStack.add(vertex);
+
+  // Explore neighbors
+  for (const neighbor of this.adjacencyList.get(vertex)) {
+    if (!visited.has(neighbor)) {
+      // If the neighbor has not been visited, recursively visit it
+      if (this._detectCycleUtil(neighbor, visited, recStack)) {
+        return true; // Cycle found
+      }
+    } else if (recStack.has(neighbor)) {
+      // If the neighbor is in the recursion stack, a cycle is detected
+      return true;
+    }
+  }
+
+  // Backtrack: remove current vertex from recursion stack
+  recStack.delete(vertex);
+  return false; // No cycle found from this vertex
+}
 
   /**
    * Returns the list of adjacent vertices for a given vertex.
@@ -328,6 +344,8 @@ class AdjacencyListGraph {
   topologicalSort() {
     const stack = [];
     const inDegree = new Map(); // To track the in-degree of each vertex
+
+    if (this.isEmpty()) return [];
 
     // Initialize in-degrees to 0
     for (const vertex of this.adjacencyList.keys()) {

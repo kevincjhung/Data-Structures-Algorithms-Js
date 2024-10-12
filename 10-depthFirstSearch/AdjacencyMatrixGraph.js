@@ -203,17 +203,17 @@ class AdjacencyMatrixGraph {
 
 
 
- /**
-   * Gets the shortest path between two vertices using DFS.
-   * It tracks the predecessors of each visited vertex to reconstruct
-   * the path once the ending vertex is reached.
-   * 
-   * @param {any} startVertex - The starting vertex for the search.
-   * @param {any} endVertex - The ending vertex for which the shortest path is sought.
-   * @returns {Array<any>} An array representing the shortest path of vertices from 
-   *                       the startVertex to the endVertex. If no path exists, 
-   *                       an empty array is returned.
-   */
+  /**
+    * Gets the shortest path between two vertices using DFS.
+    * It tracks the predecessors of each visited vertex to reconstruct
+    * the path once the ending vertex is reached.
+    * 
+    * @param {any} startVertex - The starting vertex for the search.
+    * @param {any} endVertex - The ending vertex for which the shortest path is sought.
+    * @returns {Array<any>} An array representing the shortest path of vertices from 
+    *                       the startVertex to the endVertex. If no path exists, 
+    *                       an empty array is returned.
+    */
   dfsShortestPath(startVertex, endVertex) {
     const visited = new Set();
     const queue = [];
@@ -254,35 +254,172 @@ class AdjacencyMatrixGraph {
 
   /**
    * Checks whether there is a path between two vertices using DFS.
+   * 
+   * @param {any} startVertex - The starting vertex.
+   * @param {any} endVertex - The ending vertex.
    * @returns {boolean}
    */
-  isConnected(){
+  isConnected(startVertex, endVertex) {
+    return this.dfsShortestPath(startVertex, endVertex).length > 0;
+  }
 
+  /**
+   * Finds a path between two vertices using DFS.
+   * 
+   * @param {any} startVertex - The starting vertex. 
+   * @param {any} endVertex - The ending vertex. 
+   * @returns {boolean} True if there is a path, false otherwise.
+   */
+  findPath(startVertex, endVertex) {
+    return this.dfsShortestPath(startVertex, endVertex);
+  }
+
+  /**
+   * Counts the number of connected components in the graph.
+   * 
+   * @returns {number} The number of connected components.
+   */
+  countConnectedComponents() {
+    const visited = new Set();
+    let count = 0;
+
+    for (const vertex of this.getVertices()) {
+      if (!visited.has(vertex)) {
+        count++;
+        this._dfsCountComponents(vertex, visited);
+      }
+    }
+
+    return count;
+  }
+
+  /**
+   * Helper function for counting connected components using DFS.
+   * 
+   * @param {any} vertex - the starting vertex for DFS.
+   * @param {Set} visited - The set of visited vertices.
+   * @private
+   */
+  _dfsCountComponents(vertex, visited) {
+    visited.add(vertex);
+
+    const edges = this.getEdges(vertex);
+
+    for (const edge in edges) {
+      if (!visited.has(edge)) {
+        this._dfsCountComponents(edge, visited);
+      }
+    }
+  }
+
+  /**
+   * Detects if there is a cycle in the graph using DFS
+   * 
+   * @returns {boolean} true if a cycle exists, false otherwise.
+   */
+  detectCycle() {
+    const visited = new Set();
+    const recursionStack = new Set();
+
+    for (const vertex of this.getVertices()) {
+      if (!visited.has(vertex)) {
+        if (this._detectCycleDFS(vertex, visited, recursionStack)) {
+          return true;
+        }
+      }
+    }
+
+    return false;
+  }
+
+  /**
+ * Helper function for cycle detection using DFS.
+ * @param {any} vertex - The current vertex.
+ * @param {Set} visited - The set of visited vertices.
+ * @param {Set} recursionStack - The recursion stack for DFS.
+ * @returns {boolean} True if a cycle is found, false otherwise.
+ * @private
+ */
+  _detectCycleDFS(vertex, visited, recursionStack) {
+    visited.add(vertex);
+    recursionStack.add(vertex);
+
+    const edges = this.getEdges(vertex);
+    for (const edge of edges) {
+      if (!visited.has(edge)) {
+        if (this._detectCycleDFS(edge, visited, recursionStack)) {
+          return true;
+        }
+      } else if (recursionStack.has(edge)) {
+        return true; // Cycle detected
+      }
+    }
+
+    recursionStack.delete(vertex);
+    return false;
   }
 
 
-  findPath(){
+  /**
+  * Gets all adjacent vertices for a specific vertex.
+  * @param {any} vertex - The vertex for which adjacent vertices are needed.
+  * @returns {Array<any>} An array of adjacent vertices.
+  * @throws {Error} If the vertex doesn't exist.
+  */
+  getAdjacentVertices(vertex) {
+    if (!this.hasVertex(vertex)) {
+      throw new Error(`The given vertex ${vertex} doesn't exist`);
+    }
 
+    const index = [...this.vertices].indexOf(vertex);
+    const adjacent = [];
+
+    for (let i = 0; i < this.numVertices; i++) {
+      if (this.adjMatrix[index][i] === 1) {
+        adjacent.push([...this.vertices][i]);
+      }
+    }
+
+    return adjacent;
   }
 
-  countConnectedComponents(){
 
+  /**
+ * Performs a topological sort on the graph.
+ * @returns {Array<any>} An array representing the topological order of vertices.
+ * @throws {Error} If the graph contains a cycle.
+ */
+  topologicalSort() {
+    const visited = new Set();
+    const stack = [];
+
+    for (const vertex of this.getVertices()) {
+      if (!visited.has(vertex)) {
+        this._topologicalSortDFS(vertex, visited, stack);
+      }
+    }
+
+    return stack.reverse(); // Return the stack in reverse order
   }
 
-  detectCycle(){
+  /**
+   * Helper function for topological sort using DFS.
+   * @param {any} vertex - The current vertex.
+   * @param {Set} visited - The set of visited vertices.
+   * @param {Array} stack - The stack to hold the topological order.
+   * @private
+   */
+  _topologicalSortDFS(vertex, visited, stack) {
+    visited.add(vertex);
 
-  }
+    const edges = this.getEdges(vertex);
+    for (const edge of edges) {
+      if (!visited.has(edge)) {
+        this._topologicalSortDFS(edge, visited, stack);
+      }
+    }
 
-  getAdjacentVertices(){
-
-  }
-
-  topologicalSort(){
-
-  }
-
-  _topologicalSortDFS(){
-    
+    stack.push(vertex); // Push the vertex to stack after visiting all its edges
   }
 }
 
